@@ -38,8 +38,7 @@ def get_messages():
 def like_message(id):
     message = Messages.query.get(id)
     if message:
-        like = Likes(message_id=message.id, created_at=datetime.utcnow())
-        message.likes_count += 1
+        like = Likes(message_id=message.id, created_at=datetime.utcnow())        
         db.session.add(like)
         db.session.commit()
         return jsonify({'id': message.id, 'Message': message.text, 'created_at': message.created_at, 'likes_count': message.likes_count})
@@ -51,14 +50,10 @@ def like_message(id):
 def unlike_message(id):
     message = Messages.query.get(id)
     if message:
-        like = Likes.query.filter_by(message_id=message.id).first()
-        if like:
-            message.likes_count -= 1
-            db.session.delete(like)
-            db.session.commit()
-            return jsonify({'id': message.id, 'text': message.text, 'created_at': message.created_at, 'likes_count': message.likes_count})
-        else:
-            return jsonify({'error': 'Like not found'}), 404
+        like = Likes.query.filter_by(message_id=message.id).first()                
+        db.session.delete(like)
+        db.session.commit()
+        return jsonify({'id': message.id, 'text': message.text, 'created_at': message.created_at, 'likes_count': message.likes_count})
     else:
         return jsonify({'error': 'Message not found'}), 404
 
