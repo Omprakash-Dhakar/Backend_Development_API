@@ -1,13 +1,13 @@
-# SQL Query for creating Tables and Triggers
+--SQL Query for creating Tables and Triggers
 
-# Query for creating 'messages' table
+--Query for creating 'messages' table
 CREATE TABLE messages (
     id SERIAL PRIMARY KEY,
     text TEXT NOT NULL,
     created_at TIMESTAMP NOT NULL
 );
 
-# Query for creating 'likes' table
+--Query for creating 'likes' table
 CREATE TABLE likes (
     id SERIAL PRIMARY KEY,
     message_id INTEGER NOT NULL,
@@ -15,7 +15,7 @@ CREATE TABLE likes (
     FOREIGN KEY (message_id) REFERENCES messages (id)
 );
 
-# Query for making a trigger function
+--Query for making a trigger function
 -- Create a trigger function to increment the likes_count when a like is inserted
 CREATE OR REPLACE FUNCTION increment_likes_count() RETURNS TRIGGER AS $$
 BEGIN
