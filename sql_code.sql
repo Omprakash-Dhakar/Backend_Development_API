@@ -16,22 +16,31 @@ CREATE TABLE likes (
 );
 
 # Query for making a trigger function
-CREATE OR REPLACE FUNCTION update_likes_count()
-RETURNS TRIGGER AS $$
+-- Create a trigger function to increment the likes_count when a like is inserted
+CREATE OR REPLACE FUNCTION increment_likes_count() RETURNS TRIGGER AS $$
 BEGIN
-    UPDATE messages SET likes_count = (SELECT COUNT(*) FROM likes WHERE message_id = NEW.message_id) WHERE id = NEW.message_id;
-    RETURN NULL;
+    UPDATE messages SET likes_count = likes_count + 1 WHERE id = NEW.message_id;
+    RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
 
-# Calling trigger function when their is a like
-CREATE TRIGGER update_likes_count_on_like
+-- Create a trigger to call the increment_likes_count function after a like is inserted
+CREATE TRIGGER increment_likes_count_trigger
 AFTER INSERT ON likes
 FOR EACH ROW
-EXECUTE FUNCTION update_likes_count();
+EXECUTE FUNCTION increment_likes_count();
 
-# calling trigger function for unlike
-CREATE TRIGGER update_likes_count_on_unlike
+-- Create a trigger function to decrement the likes_count when a like is deleted
+CREATE OR REPLACE FUNCTION decrement_likes_count() RETURNS TRIGGER AS $$
+BEGIN
+    UPDATE messages SET likes_count = likes_count - 1 WHERE id = OLD.message_id;
+    RETURN OLD;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Create a trigger to call the decrement_likes_count function after a like is deleted
+CREATE TRIGGER decrement_likes_count_trigger
 AFTER DELETE ON likes
 FOR EACH ROW
-EXECUTE FUNCTION update_likes_count();
+EXECUTE FUNCTION decrement_likes_count();
+
